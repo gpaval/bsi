@@ -1,18 +1,30 @@
-'use strict';
+var qldb = require("amazon-qldb-driver-nodejs");
 
-module.exports.hello = async event => {
-  return {
-    statusCode: 200,
-    body: JSON.stringify(
-      {
-        message: 'Go Serverless v1.0! Your function executed successfully!',
-        input: event,
-      },
-      null,
-      2
-    ),
+module.exports.hello = async (event, context, callback) => {
+  const driver = new qldb.QldbDriver("qldb-ledger-dev");
+
+  // await driver.executeLambda(async (txn) => {
+  //   txn.execute("CREATE TABLE People");
+  // });
+
+  const person = {
+    firstName: "John",
+    lastName: "Doe",
+    age: 42,
+    phoneNumber: "etc.",
   };
 
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
+  await driver.executeLambda(async (txn) => {
+    txn.execute("INSERT INTO People ?", person);
+  });
+
+  const data = await driver.executeLambda(async (txn) => {
+    return txn.execute(
+      "SELECT firstName, age, lastName FROM People  WHERE firstName = ?",
+      "John"
+    );
+  });
+
+  console.log("SUCCES", JSON.stringify(data));
+  // callback(null, crypt(data));
 };

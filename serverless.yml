@@ -7,6 +7,12 @@ provider:
   region: eu-central-1
   profile: bsi
 
+
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action: "*"
+      Resource: "*"
+
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
 #    - Effect: "Allow"
@@ -49,6 +55,28 @@ resources:
       Name: qldb-ledger-${self:provider.stage}
       DeletionProtection: false
       PermissionsMode: ALLOW_ALL
+
+  # QLldbServiceRole:
+  #   Type: "AWS::IAM::Role"
+  #   Properties:
+  #     RoleName: "Qldb-Service-${self:provider.stage}"
+  #     AssumeRolePolicyDocument:
+  #       Version: "2012-10-17"
+  #       Statement:
+  #         - Effect: "Allow"
+  #           Principal:
+  #             Service:
+  #               - "appsync.amazonaws.com"
+  #           Action:
+  #             - "qldb:*"
+  #     Policies:
+  #       - PolicyName: "Qldb-Policy"
+  #         PolicyDocument:
+  #           Version: "2012-10-17"
+  #           Statement:
+  #             - Effect: "Allow"
+  #               Action: "*"
+  #               Resource: "*"
 
 #    NewResource:
 #      Type: AWS::S3::Bucket
