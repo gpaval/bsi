@@ -37,6 +37,18 @@ functions:
             template:
               application/json: ${file(config.yml):application_json}
 
+  insertCognitoUser:
+    handler: src/insertCognitoUser.handler
+    events:
+      - http:
+          path: insertCognitoUser
+          method: post
+          integration: lambda
+          cors: true
+          request:
+            template:
+              application/json: ${file(config.yml):application_json}
+
 # you can add CloudFormation resource templates here
 resources:
  Resources:

@@ -7,6 +7,6 @@ module.exports.handler = async (event, context, callback) => {
   const data = await driver.executeLambda(async (txn) => {
     return txn.execute("SELECT * FROM People WHERE lastName = ?", name);
   });
-
+console.log(data);
   callback(null, data);
 };

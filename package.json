@@ -1,0 +1,25 @@
+{
+  "name": "bsi",
+  "version": "1.0.0",
+  "description": "Blockchain Secured Identity",
+  "main": "index.js",
+  "dependencies": {
+    "amazon-qldb-driver-nodejs": "^2.0.0",
+    "ion-js": "^4.0.1",
+    "jsbi": "^3.1.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gpaval/bsi.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gpaval/bsi/issues"
+  },
+  "homepage": "https://github.com/gpaval/bsi#readme"
+}
