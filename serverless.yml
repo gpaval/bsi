@@ -58,6 +58,8 @@ functions:
           route: $disconnect
       - websocket:
           route: $default
+      - websocket:
+          route: ceva
 
 # you can add CloudFormation resource templates here
 resources:
@@ -78,7 +80,7 @@ resources:
         - email
       AutoVerifiedAttributes:
         - email
-       
+
   # Cognito - Client
   CognitoUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
@@ -86,7 +88,7 @@ resources:
       ClientName: ${self:provider.stage}-user-pool-client
       UserPoolId:
         Ref: CognitoUserPool
-      ExplicitAuthFlows: 
+      ExplicitAuthFlows:
         - USER_PASSWORD_AUTH
 
   CognitoIdentityPool:
