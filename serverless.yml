@@ -49,6 +49,16 @@ functions:
             template:
               application/json: ${file(config.yml):application_json}
 
+  websocket:
+    handler: src/websocket.handler
+    events:
+      - websocket:
+          route: $connect
+      - websocket:
+          route: $disconnect
+      - websocket:
+          route: $default
+
 # you can add CloudFormation resource templates here
 resources:
  Resources:
