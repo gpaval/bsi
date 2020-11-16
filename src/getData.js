@@ -2,11 +2,11 @@ var qldb = require("amazon-qldb-driver-nodejs");
 
 module.exports.handler = async (event, context, callback) => {
   const driver = new qldb.QldbDriver("qldb-ledger-dev");
-  const name = event.params.querystring.name;
+  const email = event.params.querystring.email;
 
   const data = await driver.executeLambda(async (txn) => {
-    return txn.execute("SELECT * FROM People WHERE lastName = ?", name);
+    return txn.execute("SELECT * FROM People WHERE email = ?", email);
   });
-console.log(data);
+  console.log(data);
   callback(null, data);
 };
