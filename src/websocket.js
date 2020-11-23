@@ -2,7 +2,7 @@ const AWS = require("aws-sdk");
 
 module.exports.handler = async (event, context, callback) => {
   console.log(event);
-  const connectionId = event.requestContext.connectionId;
+  let connectionId = event.requestContext.connectionId;
   let messageReceived = event.body;
 
   const domain = event.requestContext.domainName;
@@ -24,6 +24,19 @@ module.exports.handler = async (event, context, callback) => {
             ConnectionId: connectionId,
             Data: JSON.stringify({
               message: "test!",
+              type: messageReceived.type,
+              connectionId: connectionId,
+            }),
+          })
+          .promise();
+      } else if (messageReceived.type === "registering") {
+        console.log("33: ", messageReceived);
+        connectionId = messageReceived.connectionId; // TREBUIE INCERCAT SA TRIMITI LA NOUL CONNECTION ID
+        await apiGatewayManagementApi
+          .postToConnection({
+            ConnectionId: connectionId,
+            Data: JSON.stringify({
+              message: "3.14!",
               type: messageReceived.type,
               connectionId: connectionId,
             }),
