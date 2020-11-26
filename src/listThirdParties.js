@@ -1,7 +1,6 @@
 const AWS = require("aws-sdk");
 const dynamodb = require("../libs/dynamodb-lib");
-const tableName = "third_parties";
-
+const tableName = process.env.ENTITIES_TABLE;;
 const docClient = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = async (event, context, callback) => {
@@ -11,7 +10,7 @@ exports.handler = async (event, context, callback) => {
 
   do {
       items = await docClient.scan(params).promise();
-      items.Items.forEach((item) => scanResults.push(item));
+      scanResults.push(...items.Items);
       params.ExclusiveStartKey = items.LastEvaluatedKey;
   } while (typeof items.LastEvaluatedKey != "undefined");
 

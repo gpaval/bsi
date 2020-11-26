@@ -1,31 +1,27 @@
 const AWS = require("aws-sdk");
 const dynamodb = require("../libs/dynamodb-lib");
-const tableName = "third_parties";
-
+const tableName = process.env.ENTITIES_TABLE;
+const { v4: uuidv4 } = require('uuid');
 const docClient = new AWS.DynamoDB.DocumentClient();
-
-
-
 
 exports.handler = async (event, context, callback) => {
 
-	const { name, permisson } = event.body;
-	let tid = '3a32f9b9-07ef-4e48-8967-bfca1af6997d';
-	let token = 'kjsdf872ksh198-akh2387ih-kh872haskh';
-	let requiredKeys = {0 : 'email', 1 : 'name'};
-
+	const { firstName, lastName, email, permisson, name } = event.body;
+	const id = uuidv4();
 	const params = {
 		TableName:tableName,
 		Item:{
+			"id": id,
 			"name": name,
 			"permisson": permisson,
-			"requiredKeys": requiredKeys,
-			"tid": tid,
-			"token": token
+			"requiredKeys": {
+				'email': email,
+				'firstName' : firstName,
+				'lastName' : lastName
+			}
 		}
 	};
 
-	console.log("Adding a new item...");
 	docClient.put(params, function(err, data) {
 		if (err) {
 			console.error("Unable to add item. Error JSON:", JSON.stringify(err, null, 2));
@@ -34,5 +30,5 @@ exports.handler = async (event, context, callback) => {
 		}
 	});
 
-  callback(null, "Inserted: " + JSON.stringify(params));
+  callback(null, "inserted: " + JSON.stringify(params));
 };
