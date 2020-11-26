@@ -64,6 +64,30 @@ functions:
             template:
               application/json: ${file(config.yml):application_json}
 
+  listThirdParties:
+    handler: src/listThirdParties.handler
+    events:
+      - http:
+          path: listThirdParties
+          method: get
+          integration: lambda
+          cors: true
+          request:
+            template:
+              application/json: ${file(config.yml):application_json}
+
+  addThirdParties:
+    handler: src/addThirdParties.handler
+    events:
+      - http:
+          path: addThirdParties
+          method: post
+          integration: lambda
+          cors: true
+          request:
+            template:
+              application/json: ${file(config.yml):application_json}
+
   websocket:
     handler: src/websocket.handler
     events:

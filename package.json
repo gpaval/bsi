@@ -6,7 +6,8 @@
   "dependencies": {
     "amazon-qldb-driver-nodejs": "^2.0.0",
     "ion-js": "^4.0.1",
-    "jsbi": "^3.1.4"
+    "jsbi": "^3.1.4",
+    "uuid": "^8.3.1"
   },
   "devDependencies": {},
   "scripts": {
