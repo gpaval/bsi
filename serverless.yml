@@ -87,6 +87,18 @@ functions:
           request:
             template:
               application/json: ${file(config.yml):application_json}
+            
+  editThirdParty:
+    handler: src/editThirdParty.handler
+    events:
+      - http:
+          path: editThirdParty
+          method: post
+          integration: lambda
+          cors: true
+          request:
+            template:
+              application/json: ${file(config.yml):application_json}
 
   websocket:
     handler: src/websocket.handler
