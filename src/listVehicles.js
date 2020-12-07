@@ -5,11 +5,8 @@ module.exports.handler = async (event, context, callback) => {
   const proprietar = event.params.querystring.proprietarEmail;
 
   const data = await driver.executeLambda(async (txn) => {
-    return txn.execute(
-      "SELECT * FROM Vehicle WHERE proprietarEmail = '?'",
-      proprietar
-    );
+    return txn.execute("SELECT * FROM Vehicle WHERE proprietarEmail = ?", proprietar);
   });
-  console.log(data);
-  callback(null, data);
+
+  callback(null, data._resultList);
 };
