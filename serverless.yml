@@ -100,6 +100,42 @@ functions:
             template:
               application/json: ${file(config.yml):application_json}
 
+  getVehicleDetails:
+    handler: src/getVehicleDetails.handler
+    events:
+      - http:
+          path: getVehicleDetails
+          method: get
+          integration: lambda
+          cors: true
+          request:
+            template:
+              application/json: ${file(config.yml):application_json}
+
+  addVehicle:
+    handler: src/addVehicle.handler
+    events:
+      - http:
+          path: addVehicle
+          method: post
+          integration: lambda
+          cors: true
+          request:
+            template:
+              application/json: ${file(config.yml):application_json}
+
+  updateVehicleMaintenance:
+    handler: src/updateVehicleMaintenance.handler
+    events:
+      - http:
+          path: updateVehicleMaintenance
+          method: post
+          integration: lambda
+          cors: true
+          request:
+            template:
+              application/json: ${file(config.yml):application_json}
+
   websocket:
     handler: src/websocket.handler
     events:
