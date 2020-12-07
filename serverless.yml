@@ -124,6 +124,18 @@ functions:
             template:
               application/json: ${file(config.yml):application_json}
 
+  getVehicleHistory:
+    handler: src/getVehicleHistory.handler
+    events:
+      - http:
+          path: getVehicleHistory
+          method: get
+          integration: lambda
+          cors: true
+          request:
+            template:
+              application/json: ${file(config.yml):application_json}
+
   addVehicle:
     handler: src/addVehicle.handler
     events:
