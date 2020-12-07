@@ -15,7 +15,17 @@ module.exports.handler = async (event, context, callback) => {
   };
 
   await driver.executeLambda(async (txn) => {
-    txn.execute("INSERT INTO VehicleMaintenance ?", maintenance);
+
+    // Check if doc with GovId = govId exists
+    const results: ionJs.dom.Value[] = (await txn.execute('SELECT * FROM VehicleMaintenance WHERE VIN= ?', vin)).getResultList();
+    // Check if there are any results
+    if (results.length) {
+      // Document already exists, we need to update
+      await txn.execute('UPDATE VehicleMaintenance AS p SET p = ? WHERE p.VIN = ?', maintenance, vin);
+    } else {
+      await txn.execute("INSERT INTO VehicleMaintenance ?", maintenance);
+    }
+
   });
 
   callback(null, "Inserted: " + JSON.stringify(maintenance));
