@@ -100,6 +100,18 @@ functions:
             template:
               application/json: ${file(config.yml):application_json}
 
+  listVehicles:
+    handler: src/listVehicles.handler
+    events:
+      - http:
+          path: listVehicles
+          method: get
+          integration: lambda
+          cors: true
+          request:
+            template:
+              application/json: ${file(config.yml):application_json}
+
   getVehicleDetails:
     handler: src/getVehicleDetails.handler
     events:

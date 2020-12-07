@@ -3,7 +3,15 @@ var qldb = require("amazon-qldb-driver-nodejs");
 module.exports.handler = async (event, context, callback) => {
   const driver = new qldb.QldbDriver("qldb-ledger-dev");
 
-  const { vin, licensePlateNumber, year, make, model, color } = event.body;
+  const {
+    vin,
+    licensePlateNumber,
+    year,
+    make,
+    model,
+    color,
+    proprietarEmail,
+  } = event.body;
 
   const vehicle = {
     VIN: vin,
@@ -11,7 +19,8 @@ module.exports.handler = async (event, context, callback) => {
     year: year,
     make: make,
     model: model,
-    color: color
+    color: color,
+    proprietarEmail,
   };
 
   await driver.executeLambda(async (txn) => {
