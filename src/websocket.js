@@ -1,4 +1,6 @@
 const AWS = require("aws-sdk");
+const dynamodb = require("../libs/dynamodb-lib");
+const citizensTable = process.env.CITIZENS_TABLE;
 const qldb = require("amazon-qldb-driver-nodejs");
 
 module.exports.handler = async (event, context, callback) => {
@@ -31,29 +33,47 @@ module.exports.handler = async (event, context, callback) => {
           })
           .promise();
       } else if (messageReceived.type === "registering") {
-        let sql = "SELECT ";
-        for (let i = 0; i < messageReceived.requiredKeys.length; i++) {
-          sql += messageReceived.requiredKeys[i] + ", ";
+        const paramsQuery = {
+          TableName: citizensTable,
+          KeyConditionExpression: "email = :e",
+          IndexName: "Index-Email",
+          ExpressionAttributeValues: {
+            ":e": { S: messageReceived.email },
+          },
+        };
+        data = await dynamodb("query", paramsQuery);
+        if (!data.Items.length) {
+          await apiGatewayManagementApi
+            .postToConnection({
+              ConnectionId: connectionId,
+              Data: JSON.stringify({
+                message: "NO DATE!",
+                type: messageReceived.type,
+                connectionId: connectionId,
+              }),
+            })
+            .promise();
+        } else {
+          user = AWS.DynamoDB.Converter.unmarshall(data.Items[0]);
+
+          const obj = {};
+          for (let i = 0; i < messageReceived.requiredKeys.length; i++) {
+            obj[messageReceived.requiredKeys[i]] =
+              user[messageReceived.requiredKeys[i]];
+          }
+
+          connectionId = messageReceived.connectionId;
+          await apiGatewayManagementApi
+            .postToConnection({
+              ConnectionId: connectionId,
+              Data: JSON.stringify({
+                message: JSON.stringify(obj),
+                type: messageReceived.type,
+                connectionId: connectionId,
+              }),
+            })
+            .promise();
         }
-        const pos = sql.lastIndexOf(",");
-        sql = sql.substring(0, pos) + sql.substring(pos + 1);
-        sql += " FROM People WHERE email = ?";
-
-        const data = await driver.executeLambda(async (txn) => {
-          return txn.execute(sql, messageReceived.email);
-        });
-
-        connectionId = messageReceived.connectionId;
-        await apiGatewayManagementApi
-          .postToConnection({
-            ConnectionId: connectionId,
-            Data: JSON.stringify({
-              message: JSON.stringify(data.getResultList()),
-              type: messageReceived.type,
-              connectionId: connectionId,
-            }),
-          })
-          .promise();
       } else {
         await apiGatewayManagementApi
           .postToConnection({

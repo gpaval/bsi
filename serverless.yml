@@ -9,6 +9,7 @@ provider:
 
   environment:
     ENTITIES_TABLE: ${self:provider.stage}-Entities
+    CITIZENS_TABLE: ${self:provider.stage}-Citizens
 
   iamRoleStatements:
     - Effect: "Allow"
@@ -16,30 +17,6 @@ provider:
       Resource: "*"
 
 functions:
-  getData:
-    handler: src/getData.handler
-    events:
-      - http:
-          path: getData
-          method: get
-          integration: lambda
-          cors: true
-          request:
-            template:
-              application/json: ${file(config.yml):application_json}
-
-  insertData:
-    handler: src/insertData.handler
-    events:
-      - http:
-          path: insertData
-          method: post
-          integration: lambda
-          cors: true
-          request:
-            template:
-              application/json: ${file(config.yml):application_json}
-
   insertCognitoUser:
     handler: src/insertCognitoUser.handler
     events:
@@ -239,3 +216,26 @@ resources:
         - AttributeName: id
           KeyType: HASH
       BillingMode: PAY_PER_REQUEST
+
+  Citizens:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:provider.stage}-Citizens
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: email
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      GlobalSecondaryIndexes:
+        - IndexName: Index-Email
+          KeySchema:
+            - AttributeName: email
+              KeyType: HASH
+            - AttributeName: id
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
