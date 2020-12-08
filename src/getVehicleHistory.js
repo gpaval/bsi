@@ -5,11 +5,10 @@ module.exports.handler = async (event, context, callback) => {
   const vin = event.params.querystring.vin;
 
   const data = await driver.executeLambda(async (txn) => {
-    return txn.execute(
-      "SELECT * FROM history(Vehicle) WHERE data.VIN = '?'",
-      vin
-    );
+    $query = "SELECT * FROM history(Vehicle) AS v, history(VehicleMaintenance) AS vm WHERE vm.data.VIN = v.data.VIN AND v.data.VIN = ?";
+    return txn.execute($query, vin);
   });
+
   console.log(data);
-  callback(null, data);
+  callback(null, data._resultList);
 };
