@@ -59,7 +59,9 @@ module.exports.handler = async (event, context, callback) => {
           const obj = {};
           for (let i = 0; i < messageReceived.requiredKeys.length; i++) {
             obj[messageReceived.requiredKeys[i]] =
-              user[messageReceived.requiredKeys[i]];
+              user[messageReceived.requiredKeys[i]] === "userId"
+                ? user.id
+                : user[messageReceived.requiredKeys[i]];
           }
 
           connectionId = messageReceived.connectionId;
