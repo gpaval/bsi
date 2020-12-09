@@ -13,12 +13,28 @@ module.exports.handler = async (event, context, callback) => {
   maintenanceHistory.push(...data._resultList);
 
   for (let i = 0; i < maintenanceHistory.length; i++) {
-    if (maintenanceHistory[i].data.data) {
-      maintenanceHistory[i].data.date = maintenanceHistory[i].data.data;
-      delete maintenanceHistory[i].data.data;
+    objMaintenance = maintenanceHistory[i].data;
+    if (objMaintenance.data) {
+      objMaintenance.date = objMaintenance.data;
+      delete objMaintenance.data;
     }
 
-    result.push(maintenanceHistory[i].data);
+    const obj = {
+      date: objMaintenance.date,
+      changes: "VIN: " + objMaintenance.VIN,
+    };
+
+    if (objMaintenance.operation) {
+      obj.changes += " | operation: " + objMaintenance.operation;
+    }
+    if (objMaintenance.kilometers) {
+      obj.changes += " | kilometers: " + objMaintenance.kilometers;
+    }
+    if (objMaintenance.details) {
+      obj.changes += " | details: " + objMaintenance.details;
+    }
+
+    result.push(obj);
   }
 
   console.log(JSON.stringify(result));
