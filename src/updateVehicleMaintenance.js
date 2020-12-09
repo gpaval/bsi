@@ -1,5 +1,4 @@
 var qldb = require("amazon-qldb-driver-nodejs");
-const { v4: uuidv4 } = require("uuid");
 
 module.exports.handler = async (event, context, callback) => {
   const driver = new qldb.QldbDriver("qldb-ledger-dev");
@@ -7,10 +6,10 @@ module.exports.handler = async (event, context, callback) => {
   const { vin, operation, kilometers, serviceName, details, icon } = event.body;
 
   const maintenance = {
-    VIN: vin || uuidv4(),
+    VIN: vin,
     operation: operation,
     kilometers: kilometers,
-    date: Math.floor(Date.now() / 1000),
+    date: Date.now(),
     serviceName: serviceName,
     details: details,
     icon: icon,
