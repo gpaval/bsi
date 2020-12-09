@@ -89,35 +89,11 @@ functions:
             template:
               application/json: ${file(config.yml):application_json}
 
-  listVehicles:
-    handler: src/listVehicles.handler
+  getAllRequiredKeys:
+    handler: src/getAllRequiredKeys.handler
     events:
       - http:
-          path: listVehicles
-          method: get
-          integration: lambda
-          cors: true
-          request:
-            template:
-              application/json: ${file(config.yml):application_json}
-
-  getVehicleDetails:
-    handler: src/getVehicleDetails.handler
-    events:
-      - http:
-          path: getVehicleDetails
-          method: get
-          integration: lambda
-          cors: true
-          request:
-            template:
-              application/json: ${file(config.yml):application_json}
-
-  getVehicleHistory:
-    handler: src/getVehicleHistory.handler
-    events:
-      - http:
-          path: getVehicleHistory
+          path: getAllRequiredKeys
           method: get
           integration: lambda
           cors: true
@@ -137,6 +113,63 @@ functions:
             template:
               application/json: ${file(config.yml):application_json}
 
+  listVehicles:
+    handler: src/listVehicles.handler
+    events:
+      - http:
+          path: listVehicles
+          method: get
+          integration: lambda
+          cors: true
+          request:
+            template:
+              application/json: ${file(config.yml):application_json}
+          authorizer:
+            name: ThirdPartyAuthorizer
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt:
+                - CognitoThirdPartyPool
+                - Arn
+
+  getVehicleDetails:
+    handler: src/getVehicleDetails.handler
+    events:
+      - http:
+          path: getVehicleDetails
+          method: get
+          integration: lambda
+          cors: true
+          request:
+            template:
+              application/json: ${file(config.yml):application_json}
+          authorizer:
+            name: ThirdPartyAuthorizer
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt:
+                - CognitoThirdPartyPool
+                - Arn
+
+  getVehicleHistory:
+    handler: src/getVehicleHistory.handler
+    events:
+      - http:
+          path: getVehicleHistory
+          method: get
+          integration: lambda
+          cors: true
+          request:
+            template:
+              application/json: ${file(config.yml):application_json}
+          authorizer:
+            name: ThirdPartyAuthorizer
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt:
+                - CognitoThirdPartyPool
+                - Arn
+
   updateVehicleMaintenance:
     handler: src/updateVehicleMaintenance.handler
     events:
@@ -148,6 +181,13 @@ functions:
           request:
             template:
               application/json: ${file(config.yml):application_json}
+          authorizer:
+            name: ThirdPartyAuthorizer
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt:
+                - CognitoThirdPartyPool
+                - Arn
 
   websocket:
     handler: src/websocket.handler
@@ -160,19 +200,6 @@ functions:
           route: $default
       - websocket:
           route: ceva
-
-  getAllRequiredKeys:
-    handler: src/getAllRequiredKeys.handler
-    events:
-      - http:
-          path: getAllRequiredKeys
-          method: get
-          integration: lambda
-          cors: true
-          request:
-            template:
-              application/json: ${file(config.yml):application_json}
-
 
 # you can add CloudFormation resource templates here
 resources:
@@ -215,6 +242,36 @@ resources:
           ProviderName:
             Fn::GetAtt: [CognitoUserPool, ProviderName]
 
+  # Cognito - ThirdParty pool
+  CognitoThirdPartyPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: ${self:provider.stage}-thirdParties-pool
+      AliasAttributes:
+        - email
+      AutoVerifiedAttributes:
+        - email
+
+  # Cognito - Client
+  CognitoThirdPartyPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: ${self:provider.stage}-thirdParties-pool-client
+      UserPoolId:
+        Ref: CognitoThirdPartyPool
+      ExplicitAuthFlows:
+        - USER_PASSWORD_AUTH
+
+  CognitoThirdPartyIdentityPool:
+    Type: AWS::Cognito::IdentityPool
+    Properties:
+      IdentityPoolName: ${self:provider.stage}_thirdParties_identity_pool
+      AllowUnauthenticatedIdentities: false
+      CognitoIdentityProviders:
+        - ClientId:
+            Ref: CognitoThirdPartyPoolClient
+          ProviderName:
+            Fn::GetAtt: [CognitoThirdPartyPool, ProviderName]
 
   #DYNAMODB
   Entities:
