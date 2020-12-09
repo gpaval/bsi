@@ -9,8 +9,8 @@ exports.handler = async (event, context, callback) => {
 
   let data = "";
   const entities = [];
-  const requiredKeys = [];
-  try {
+  const requiredKeys = ['userId', 'email', 'firstName', 'lastName', 'age', 'address', 'phoneNumber'];
+  /*try {
     do {
       if (data.LastEvaluatedKey) {
         params["ExclusiveStartKey"] = data.LastEvaluatedKey;
@@ -28,8 +28,9 @@ exports.handler = async (event, context, callback) => {
         }
       }
     }
-    callback(null, requiredKeys);
   } catch (err) {
     console.log(err);
   }
+    */
+  callback(null, requiredKeys);
 };
