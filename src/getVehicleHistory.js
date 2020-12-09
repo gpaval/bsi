@@ -20,24 +20,28 @@ module.exports.handler = async (event, context, callback) => {
     const currentVehicle = vehicleHistory[i].data;
     const obj = {
       date: new Date(vehicleHistory[i].metadata.txTime),
+      changes: [],
     };
 
     if (currentVehicle.color + "" != previousVehicle.color + "") {
-      obj["changedColour"] = previousVehicle.color + "-" + currentVehicle.color;
+      obj.changes.push(
+        `Changed colour: ${previousVehicle.color} -> ${currentVehicle.color}`
+      );
     }
 
     if (currentVehicle.uid + "" != previousVehicle.uid + "") {
-      obj["changedOwner"] = previousVehicle.uid + "-" + currentVehicle.uid;
+      obj.changes.push(
+        `Changed owner: ${previousVehicle.uid} -> ${currentVehicle.uid}`
+      );
     }
 
     if (
       currentVehicle.licensePlateNumber + "" !=
       previousVehicle.licensePlateNumber + ""
     ) {
-      obj["changedLicensePlateNumber"] =
-        previousVehicle.licensePlateNumber +
-        "-" +
-        currentVehicle.licensePlateNumber;
+      obj.changes.push(
+        `Changed license plate number: ${previousVehicle.licensePlateNumber} -> ${currentVehicle.licensePlateNumber}`
+      );
     }
 
     result.vehicleHistory.push(obj);
