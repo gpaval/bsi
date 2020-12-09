@@ -189,6 +189,25 @@ functions:
                 - CognitoThirdPartyPool
                 - Arn
 
+  getServiceReport:
+    handler: src/getServiceReport.handler
+    events:
+      - http:
+          path: getServiceReport
+          method: get
+          integration: lambda
+          cors: true
+          request:
+            template:
+              application/json: ${file(config.yml):application_json}
+          authorizer:
+            name: ThirdPartyAuthorizer
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt:
+                - CognitoThirdPartyPool
+                - Arn
+
   websocket:
     handler: src/websocket.handler
     events:
